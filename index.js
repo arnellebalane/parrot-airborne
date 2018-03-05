@@ -1,4 +1,4 @@
-const serviceUUID = {
+const servicesUUID = {
     fa00: getUUID('fa00'),  // Command sending
     fb00: getUUID('fb00'),  // Command receiving
     fc00: getUUID('fc00'),  // Performance counter
@@ -6,15 +6,20 @@ const serviceUUID = {
     fd51: getUUID('fd51'),  // Update BLE FTP
     fe00: getUUID('fe00')   // Update RFCOMM
 };
-const sendingCharacteristicUUID = {
+let services = {};
+
+const sendingCharacteristicsUUID = {
     fa10: getUUID('fa10'),  // Send command to device without ACK
     fa11: getUUID('fa11'),  // Send command to device with ACK
     fa12: getUUID('fa12'),  // Send high priority command to device
 };
-const receivingCharacteristicUUID = {
+let sendingCharacteristics = {};
+
+const receivingCharacteristicsUUID = {
     fb14: getUUID('fb14'),  // Receive commands with ACK
     fb15: getUUID('fb15'),  // Receive commands without ACK
 };
+let receivingCharacteristics = {};
 
 document.onclick = initialize;
 
@@ -25,15 +30,15 @@ async function initialize() {
     const gatt = await connectGATT(device);
     console.log(gatt);
 
-    const services = await getServices(gatt, Object.keys(serviceUUID));
+    services = await getServices(gatt, Object.keys(servicesUUID));
     console.log(services);
 
-    const sendingCharacteristics = await getCharacteristics(
-        services.fa00, Object.keys(sendingCharacteristicUUID));
+    sendingCharacteristics = await getCharacteristics(
+        services.fa00, Object.keys(sendingCharacteristicsUUID));
     console.log(sendingCharacteristics);
 
-    const receivingCharacteristics = await getCharacteristics(
-        services.fb00, Object.keys(receivingCharacteristicUUID));
+    receivingCharacteristics = await getCharacteristics(
+        services.fb00, Object.keys(receivingCharacteristicsUUID));
     console.log(receivingCharacteristics);
 }
 
@@ -46,7 +51,7 @@ function requestDevice() {
         filters: [
             { namePrefix: 'Swat_' }
         ],
-        optionalServices: Object.values(serviceUUID)
+        optionalServices: Object.values(servicesUUID)
     });
 }
 
